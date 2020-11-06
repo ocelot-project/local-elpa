@@ -1,0 +1,41 @@
+#+TITLE: local-elpa
+This is a locally-installable Emacs package archive with just enough packages to
+successfully bootstrap both the [[https://www.spacemacs.org][Spacemacs]] and [[https://prelude.emacsredux.com/en/latest/][Prelude]] distributions, as well as
+a variety of other Emacs configurations based on common packages. A local
+package archive is useful as a fallback to make an Emacs installation work
+without a stable network connection, as well as to pin a set of packages to
+known-good versions. This is also useful for [[https://nixos.org/][Nix-style]] operating systems, as the
+set of pinned packages works where specifying a full set of fixed-point Lisp
+dependencies is inconvenient or impossible, and avoids the issue of packages in
+public archives disappearing or having their contents changed.
+
+* Usage
+  Clone this repository to your system, then update your ~package-archives~
+  Emacs Lisp variable to reference ~local-elpa~. For example, to make
+  ~local-elpa~ the last fallback package archive in case of network instability,
+  ensure this Lisp snippet runs before your configuration calls
+  ~package-initialize~:
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'package-archives '("local" . "/path/to/local-elpa/packages")
+               'append)
+#+END_SRC
+
+* Updating Packages
+To regenerate ~local-elpa~ with the latest packages from its upstream archives,
+use the command ~genepkg~ included in this repository.
+
+** With Nix
+Inside the root of the ~local-elpa~ repository, run:
+#+BEGIN_SRC bash
+  nix-shell --run genepkg
+#+END_SRC
+
+Support for running ~genepkg~ via [[https://github.com/target/lorri][lorri]] is also available.
+
+** Without Nix
+Ensure the ~elpa-mirror~ and ~quelpa~ packages are available to Emacs, then
+change directory to the repository root and run:
+#+BEGIN_SRC bash
+  emacs --batch --load genepkg-config.el --load genepkg.el
+#+END_SRC
